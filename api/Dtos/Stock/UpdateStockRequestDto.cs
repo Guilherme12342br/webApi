@@ -1,12 +1,6 @@
-﻿using api.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace api.Dtos.Stock
+﻿namespace api.Dtos.Stock
 {
-    public class CreateStockRequiredDto
+    public class UpdateStockRequestDto
     {
         public string Symbol { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
