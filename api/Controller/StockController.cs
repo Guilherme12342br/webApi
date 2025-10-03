@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using api.Mappers;
 using api.Data;
 using api.Models;
-
+using api.Dtos.Stock;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ namespace api.Controller
     [ApiController]
     public class StockController : ControllerBase
     {
-        
+
 
         private readonly ApplicationDBContext _context;
 
@@ -33,13 +33,22 @@ namespace api.Controller
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute] int id){
+        public IActionResult GetById([FromRoute] int id) {
             var stock = _context.Stock.Find(id);
             if (stock == null)
             {
                 return NotFound();
             }
             return Ok(stock.ToStockDto());
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateStockRequiredDto stockDto)
+        {
+            var stockModel = stockDto.ToStockFromCreateDTO();
+            _context.Stock.Add(stockModel);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto()); 
         }
     }
 }
