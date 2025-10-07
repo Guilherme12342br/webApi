@@ -18,9 +18,16 @@ namespace api.Repository
             _context = context;
         }
 
-        public async Task<List<Stock>> GetAllAsync()
+        public async Task<List<Stock>> GetAllAsync(bool status)
         {
-            return await _context.Stock.ToListAsync();
+            if (status)
+            {
+                return await _context.Stock.Where(s => s.Status == "ATIVO").ToListAsync();
+            }
+            else
+            {
+                return await _context.Stock.Where(s => s.Status == "DESATIVADO").ToListAsync();
+            }
         }
 
         public async Task<Stock> CreateAsync(Stock stockModel)
@@ -32,16 +39,15 @@ namespace api.Repository
 
         public async Task<Stock?> DeleteAsync(int id)
         {
-            var stockModel = await _context.Stock.FirstOrDefaultAsync(x => x.Id == id);
+            var selectedStockModel = await _context.Stock.FirstOrDefaultAsync(x => x.Id == id);
 
-            if(stockModel == null)
+            if(selectedStockModel == null)
             {
                 return null;
-            }
-
-            _context.Stock.Remove(stockModel);
+            }      
+            selectedStockModel.Status = "DESATIVADO";
             await _context.SaveChangesAsync();
-            return stockModel;
+            return selectedStockModel;
         }
 
         public async Task<Stock?> GetByIdAsync(int id)
@@ -67,7 +73,21 @@ namespace api.Repository
             await _context.SaveChangesAsync();
 
             return existingStock;
+        }
 
+        public async Task<Stock?> AtivarAsync(int id)
+        {
+            var selectedStockModel = await _context.Stock.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(selectedStockModel == null)
+            {
+                return null;
+            }
+
+            selectedStockModel.Status = "ATIVO";
+            await _context.SaveChangesAsync();
+
+            return selectedStockModel;
         }
     }
 }
