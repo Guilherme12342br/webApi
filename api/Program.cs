@@ -1,6 +1,9 @@
 using api.Data;
+using api.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +14,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<ApplicationDBContext>(options => {
+builder.Services.AddDbContext<ApplicationDBContext>(options => { 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddScoped<IStockRepository, StockRepository>();
 
 var app = builder.Build();
 
